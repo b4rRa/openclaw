@@ -4,13 +4,12 @@ import {
   patchLiveQaGatewayConfig,
   readLiveQaGatewayConfig,
 } from "../shared/live-gateway-config.runtime.js";
+import type { DiscordUser, DiscordObservedMessage } from "./discord-live.evidence.js";
 import {
   type DiscordChannel,
   type DiscordQaScenarioImplementation,
   type DiscordQaScenarioRun,
-  type DiscordUser,
   type DiscordQaRuntimeEnv,
-  type DiscordObservedMessage,
   buildDiscordQaConfig,
   resolveDiscordQaVoiceChannel,
   waitForDiscordChannelRunning,

@@ -7,9 +7,8 @@ import {
   startQaCredentialLeaseHeartbeat,
 } from "../shared/credential-lease.runtime.js";
 import { createDiscordChannelE2eSession, type DiscordChannelE2eSession } from "./channel-e2e.js";
+import type { DiscordUser, DiscordObservedMessage } from "./discord-live.evidence.js";
 import {
-  type DiscordUser,
-  type DiscordObservedMessage,
   buildDiscordQaConfig,
   getCurrentDiscordUser,
   pollChannelMessages,

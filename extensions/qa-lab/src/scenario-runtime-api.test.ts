@@ -108,7 +108,7 @@ describe("createQaScenarioRuntimeApi", () => {
       senderId: "qa-operator",
       text: "hello",
     });
-    const outbound = api.injectOutboundMessage({
+    const outbound = await api.injectOutboundMessage({
       accountId: "qa-channel",
       to: "dm:qa-operator",
       text: "hi",

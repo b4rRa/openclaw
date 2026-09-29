@@ -1,8 +1,5 @@
 import type { ChannelApprovalKind } from "openclaw/plugin-sdk/approval-handler-runtime";
-import {
-  asNullableObjectRecord,
-  readStringField,
-} from "openclaw/plugin-sdk/string-coerce-runtime";
+import { asNullableObjectRecord, readStringField } from "openclaw/plugin-sdk/string-coerce-runtime";
 export type MatrixQaRoomEvent = {
   content?: Record<string, unknown>;
   event_id?: string;

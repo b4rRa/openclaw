@@ -287,7 +287,10 @@ export function buildAnthropicThinkingErrorStreamEvents(params: {
 }): AnthropicStreamEvent[] {
   return [
     buildAnthropicMessageStart(
-      buildAnthropicMessageResponse({ model: params.model, extracted: { text: "", toolCalls: [] } }),
+      buildAnthropicMessageResponse({
+        model: params.model,
+        extracted: { text: "", toolCalls: [] },
+      }),
     ),
     {
       type: "content_block_start",

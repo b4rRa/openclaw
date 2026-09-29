@@ -7,7 +7,7 @@ import { isRecord } from "openclaw/plugin-sdk/string-coerce-runtime";
 type ArtifactRoot = Awaited<ReturnType<typeof root>>;
 type ApprovalIdentity = { approvalId: string; channelId: string; messageTs: string };
 
-type SlackDesktopRemoteMetadata = {
+export type SlackDesktopRemoteMetadata = {
   gatewayAlive?: boolean;
   gatewayPid?: string;
   hydrateMode?: string;

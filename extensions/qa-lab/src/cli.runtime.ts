@@ -1165,7 +1165,6 @@ export async function runQaParityReportCommand(opts: {
     await writeQaCliReport(
       outputDir,
       "qa-runtime-parity",
-      "QA runtime parity",
       renderQaRuntimeParityMarkdownReport(reportPayload),
       reportPayload,
     );
@@ -1180,7 +1179,6 @@ export async function runQaParityReportCommand(opts: {
       await writeQaCliReport(
         outputDir,
         "qa-runtime-token-efficiency",
-        "QA runtime token efficiency",
         renderTokenEfficiencyMarkdownReport(tokenPayload),
         tokenPayload,
       );
@@ -1218,7 +1216,6 @@ export async function runQaParityReportCommand(opts: {
   await writeQaCliReport(
     outputDir,
     "qa-agentic-parity",
-    "QA parity",
     renderQaAgenticParityMarkdownReport(comparison),
     comparison,
   );
@@ -1253,7 +1250,6 @@ export async function runQaConfidenceReportCommand(opts: {
   await writeQaCliReport(
     outputDir,
     "qa-confidence",
-    "QA confidence",
     renderQaConfidenceMarkdownReport(reportPayload),
     reportPayload,
   );
@@ -1379,7 +1375,6 @@ export async function runQaJsonlReplayCommand(opts: {
   await writeQaCliReport(
     outputDir,
     "qa-jsonl-replay",
-    "QA JSONL replay",
     renderJsonlReplayMarkdownReport(reportPayload),
     result,
   );

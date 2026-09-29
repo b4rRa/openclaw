@@ -4,9 +4,7 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/config-contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { discordQaScenarioSupport } from "./discord-live.runtime.js";
-
-const { testing } = discordQaScenarioSupport;
+import * as testing from "./discord-live.runtime.js";
 
 describe("discord live qa runtime", () => {
   afterEach(() => {

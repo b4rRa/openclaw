@@ -21,10 +21,9 @@ import type { QaGatewayChild } from "../../gateway-child.js";
 import { isTruthyOptIn } from "../../mantis-options.runtime.js";
 import { readLiveQaChannelAccounts } from "../shared/live-channel-status.js";
 import { requireLiveQaEnv } from "../shared/live-credential-env.js";
-import { assertLiveScenarioReply as assertDiscordScenarioReply } from "../shared/live-scenario-reply.js";
 import type { DiscordTranscriptsVoiceAuthorizationRun } from "./discord-transcripts-authorization.types.js";
 
-type DiscordQaRuntimeEnv = {
+export type DiscordQaRuntimeEnv = {
   guildId: string;
   channelId: string;
   driverBotToken: string;
@@ -79,7 +78,7 @@ type DiscordQaScenarioMetadata = {
   title: string;
 };
 
-type DiscordUser = {
+export type DiscordUser = {
   id: string;
   username?: string;
   bot?: boolean;
@@ -124,7 +123,7 @@ type DiscordApplicationCommand = {
   name?: string;
 };
 
-type DiscordChannel = {
+export type DiscordChannel = {
   id: string;
   guild_id?: string;
   name?: string;
@@ -139,7 +138,7 @@ type DiscordVoiceState = {
   user_id?: string;
 };
 
-type DiscordObservedMessage = {
+export type DiscordObservedMessage = {
   messageId: string;
   channelId: string;
   guildId?: string;
@@ -222,7 +221,7 @@ function requestInitFromDiscordQaRequest(request: Request): DiscordQaRequestInit
   };
 }
 
-function createDiscordQaEndpointFetcher(apiBaseUrl: string): typeof fetch {
+export function createDiscordQaEndpointFetcher(apiBaseUrl: string): typeof fetch {
   const base = new URL(apiBaseUrl.endsWith("/") ? apiBaseUrl : `${apiBaseUrl}/`);
   return async (input, init) => {
     const request = new Request(input, init);
@@ -266,6 +265,7 @@ async function requestDiscord<T>(
 ): Promise<T> {
   const apiBaseUrl = discordQaApiBaseByToken.get(token);
   return await requestDiscordLive<T>(requestPath, token, {
+    timeoutMs: 15_000,
     ...options,
     ...(apiBaseUrl
       ? { endpointRuntime: null, fetcher: createDiscordQaEndpointFetcher(apiBaseUrl) }
@@ -414,7 +414,9 @@ function assertDiscordSnowflake(value: string, label: string) {
   }
 }
 
-function resolveDiscordQaRuntimeEnv(env: NodeJS.ProcessEnv = process.env): DiscordQaRuntimeEnv {
+export function resolveDiscordQaRuntimeEnv(
+  env: NodeJS.ProcessEnv = process.env,
+): DiscordQaRuntimeEnv {
   const voiceChannelId = env.OPENCLAW_QA_DISCORD_VOICE_CHANNEL_ID?.trim();
   const runtimeEnv = {
     guildId: requireLiveQaEnv(env, "OPENCLAW_QA_DISCORD_GUILD_ID"),
@@ -437,7 +439,7 @@ function validateDiscordQaRuntimeEnv(runtimeEnv: DiscordQaRuntimeEnv, prefix: st
   }
 }
 
-function parseDiscordQaCredentialPayload(payload: unknown): DiscordQaRuntimeEnv {
+export function parseDiscordQaCredentialPayload(payload: unknown): DiscordQaRuntimeEnv {
   const parsed = discordQaCredentialPayloadSchema.parse(payload);
   const runtimeEnv = {
     guildId: parsed.guildId,
@@ -451,7 +453,7 @@ function parseDiscordQaCredentialPayload(payload: unknown): DiscordQaRuntimeEnv 
   return runtimeEnv;
 }
 
-function buildDiscordQaConfig(
+export function buildDiscordQaConfig(
   baseCfg: OpenClawConfig,
   params: {
     guildId: string;
@@ -590,33 +592,23 @@ function buildDiscordQaConfig(
   };
 }
 
-async function getCurrentDiscordUser(token: string) {
-  return await requestDiscord<DiscordUser>("/users/@me", token, {
-    timeoutMs: 15_000,
-  });
+export async function getCurrentDiscordUser(token: string) {
+  return await requestDiscord<DiscordUser>("/users/@me", token);
 }
 
 async function listGuildChannels(params: { token: string; guildId: string }) {
-  return await requestDiscord<DiscordChannel[]>(
-    `/guilds/${params.guildId}/channels`,
-    params.token,
-    {
-      timeoutMs: 15_000,
-    },
-  );
+  return await requestDiscord<DiscordChannel[]>(`/guilds/${params.guildId}/channels`, params.token);
 }
 
 async function getDiscordChannel(params: { token: string; channelId: string }) {
-  return await requestDiscord<DiscordChannel>(`/channels/${params.channelId}`, params.token, {
-    timeoutMs: 15_000,
-  });
+  return await requestDiscord<DiscordChannel>(`/channels/${params.channelId}`, params.token);
 }
 
 function isDiscordVoiceChannel(channel: DiscordChannel) {
   return channel.type === 2 || channel.type === 13;
 }
 
-async function resolveDiscordQaVoiceChannel(params: {
+export async function resolveDiscordQaVoiceChannel(params: {
   guildId: string;
   token: string;
   voiceChannelId?: string;
@@ -655,14 +647,11 @@ async function resolveDiscordQaVoiceChannel(params: {
   return first;
 }
 
-async function getCurrentDiscordVoiceState(params: { token: string; guildId: string }) {
+export async function getCurrentDiscordVoiceState(params: { token: string; guildId: string }) {
   try {
     return await requestDiscord<DiscordVoiceState>(
       `/guilds/${params.guildId}/voice-states/@me`,
       params.token,
-      {
-        timeoutMs: 15_000,
-      },
     );
   } catch (error) {
     if (error instanceof DiscordApiError && error.status === 404) {
@@ -672,7 +661,7 @@ async function getCurrentDiscordVoiceState(params: { token: string; guildId: str
   }
 }
 
-async function waitForDiscordVoiceState(params: {
+export async function waitForDiscordVoiceState(params: {
   channelId: string;
   guildId: string;
   sutBotId: string;
@@ -711,7 +700,7 @@ async function waitForDiscordVoiceState(params: {
   );
 }
 
-async function sendChannelMessage(token: string, channelId: string, content: string) {
+export async function sendChannelMessage(token: string, channelId: string, content: string) {
   return await requestDiscord<DiscordMessage>(`/channels/${channelId}/messages`, token, {
     body: {
       content,
@@ -719,21 +708,21 @@ async function sendChannelMessage(token: string, channelId: string, content: str
         parse: ["users"],
       },
     },
-    timeoutMs: 15_000,
   });
 }
 
-async function getChannelMessage(params: { token: string; channelId: string; messageId: string }) {
+export async function getChannelMessage(params: {
+  token: string;
+  channelId: string;
+  messageId: string;
+}) {
   return await requestDiscord<DiscordMessage>(
     `/channels/${params.channelId}/messages/${params.messageId}`,
     params.token,
-    {
-      timeoutMs: 15_000,
-    },
   );
 }
 
-async function waitForDiscordMessageText(params: {
+export async function waitForDiscordMessageText(params: {
   token: string;
   channelId: string;
   messageId: string;
@@ -754,7 +743,7 @@ async function waitForDiscordMessageText(params: {
   );
 }
 
-async function waitForDiscordMessageDeleted(params: {
+export async function waitForDiscordMessageDeleted(params: {
   token: string;
   channelId: string;
   messageId: string;
@@ -789,9 +778,6 @@ async function listChannelMessagesAfter(params: {
   return await requestDiscord<DiscordMessage[]>(
     `/channels/${params.channelId}/messages?${query.toString()}`,
     params.token,
-    {
-      timeoutMs: 15_000,
-    },
   );
 }
 
@@ -809,7 +795,6 @@ async function createThreadFromMessage(params: {
         name: params.name,
         auto_archive_duration: 60,
       },
-      timeoutMs: 15_000,
     },
   );
 }
@@ -820,14 +805,12 @@ async function archiveDiscordThread(params: { token: string; threadId: string })
       archived: true,
     },
     method: "PATCH",
-    timeoutMs: 15_000,
   });
 }
 
 async function joinDiscordThread(params: { token: string; threadId: string }) {
   await requestDiscord<void>(`/channels/${params.threadId}/thread-members/@me`, params.token, {
     method: "PUT",
-    timeoutMs: 15_000,
   });
 }
 
@@ -835,9 +818,6 @@ async function listThreadMessages(params: { token: string; threadId: string }) {
   return await requestDiscord<DiscordMessage[]>(
     `/channels/${params.threadId}/messages?limit=50`,
     params.token,
-    {
-      timeoutMs: 15_000,
-    },
   );
 }
 
@@ -845,7 +825,7 @@ function reactionEmojiName(reaction: DiscordReaction) {
   return reaction.emoji?.name?.trim() || reaction.emoji?.id?.trim() || "";
 }
 
-function normalizeDiscordReactionSnapshot(params: {
+export function normalizeDiscordReactionSnapshot(params: {
   message: DiscordMessage;
   observedAt: Date;
   startedAtMs: number;
@@ -864,7 +844,7 @@ function normalizeDiscordReactionSnapshot(params: {
   };
 }
 
-function computeDiscordRttMs(triggerTimestamp?: string, replyTimestamp?: string) {
+export function computeDiscordRttMs(triggerTimestamp?: string, replyTimestamp?: string) {
   if (!triggerTimestamp || !replyTimestamp) {
     return undefined;
   }
@@ -876,7 +856,7 @@ function computeDiscordRttMs(triggerTimestamp?: string, replyTimestamp?: string)
   return Math.max(0, Math.round(replyAtMs - triggerAtMs));
 }
 
-function collectSeenReactionSequence(
+export function collectSeenReactionSequence(
   snapshots: readonly DiscordReactionSnapshot[],
   expectedSequence: readonly string[],
 ) {
@@ -894,7 +874,7 @@ function collectSeenReactionSequence(
   return sequence;
 }
 
-function renderDiscordStatusReactionHtml(params: {
+export function renderDiscordStatusReactionHtml(params: {
   expectedSequence: readonly string[];
   scenarioTitle: string;
   seenSequence: readonly string[];
@@ -961,7 +941,7 @@ function renderDiscordStatusReactionHtml(params: {
 </html>`;
 }
 
-async function writeDiscordStatusReactionEvidence(params: {
+export async function writeDiscordStatusReactionEvidence(params: {
   outputDir: string;
   timeline: DiscordStatusReactionTimeline;
 }) {
@@ -1007,7 +987,7 @@ async function writeHtmlScreenshot(params: { htmlPath: string; screenshotPath: s
   }
 }
 
-function renderDiscordThreadReplyAttachmentHtml(params: {
+export function renderDiscordThreadReplyAttachmentHtml(params: {
   attachmentFilenames: readonly string[];
   expectedAttachmentFilename: string;
   messageContent?: string;
@@ -1110,7 +1090,7 @@ async function writeDiscordThreadReplyAttachmentEvidence(params: {
   return { htmlPath, ...(uiPath ? { uiPath } : {}), ...screenshot };
 }
 
-async function observeStatusReactionTimeline(params: {
+export async function observeStatusReactionTimeline(params: {
   channelId: string;
   expectedSequence: string[];
   messageId: string;
@@ -1152,13 +1132,10 @@ async function observeStatusReactionTimeline(params: {
   } satisfies DiscordStatusReactionTimeline;
 }
 
-async function listApplicationCommands(params: { token: string; applicationId: string }) {
+export async function listApplicationCommands(params: { token: string; applicationId: string }) {
   return await requestDiscord<DiscordApplicationCommand[]>(
     `/applications/${params.applicationId}/commands`,
     params.token,
-    {
-      timeoutMs: 15_000,
-    },
   );
 }
 
@@ -1168,7 +1145,7 @@ function compareDiscordSnowflakes(a: string, b: string) {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function buildDiscordWebMessageUrl(params: {
+export function buildDiscordWebMessageUrl(params: {
   guildId: string;
   messageId?: string;
   threadId: string;
@@ -1178,7 +1155,9 @@ function buildDiscordWebMessageUrl(params: {
   }`;
 }
 
-function normalizeDiscordObservedMessage(message: DiscordMessage): DiscordObservedMessage | null {
+export function normalizeDiscordObservedMessage(
+  message: DiscordMessage,
+): DiscordObservedMessage | null {
   if (!message.author?.id) {
     return null;
   }
@@ -1195,7 +1174,7 @@ function normalizeDiscordObservedMessage(message: DiscordMessage): DiscordObserv
   };
 }
 
-async function pollChannelMessages(params: {
+export async function pollChannelMessages(params: {
   token: string;
   channelId: string;
   afterSnowflake: string;
@@ -1269,7 +1248,7 @@ async function pollThreadReplyMessage(params: {
   return undefined;
 }
 
-async function runDiscordThreadReplyFilePathAttachmentScenario(params: {
+export async function runDiscordThreadReplyFilePathAttachmentScenario(params: {
   cfg: OpenClawConfig;
   driverBotId: string;
   outputDir: string;
@@ -1397,7 +1376,7 @@ async function runDiscordThreadReplyFilePathAttachmentScenario(params: {
   }
 }
 
-async function waitForDiscordChannelRunning(gateway: QaGatewayChild, accountId: string) {
+export async function waitForDiscordChannelRunning(gateway: QaGatewayChild, accountId: string) {
   const startedAt = Date.now();
   let lastStatus: ChannelAccountSnapshot | undefined;
   while (Date.now() - startedAt < 45_000) {
@@ -1419,7 +1398,7 @@ async function waitForDiscordChannelRunning(gateway: QaGatewayChild, accountId: 
   throw new Error(`discord account "${accountId}" did not become connected${details}`);
 }
 
-function matchesDiscordScenarioReply(params: {
+export function matchesDiscordScenarioReply(params: {
   channelId: string;
   message: DiscordObservedMessage;
   matchText?: string;
@@ -1432,7 +1411,7 @@ function matchesDiscordScenarioReply(params: {
   );
 }
 
-async function assertDiscordApplicationCommandsRegistered(params: {
+export async function assertDiscordApplicationCommandsRegistered(params: {
   applicationId: string;
   expectedCommandNames: string[];
   timeoutMs: number;
@@ -1463,38 +1442,4 @@ async function assertDiscordApplicationCommandsRegistered(params: {
   );
 }
 
-const testing = {
-  collectSeenReactionSequence,
-  assertDiscordScenarioReply,
-  assertDiscordApplicationCommandsRegistered,
-  buildDiscordQaConfig,
-  buildDiscordWebMessageUrl,
-  computeDiscordRttMs,
-  createDiscordQaEndpointFetcher,
-  getCurrentDiscordUser,
-  observeStatusReactionTimeline,
-  pollChannelMessages,
-  runDiscordThreadReplyFilePathAttachmentScenario,
-  sendChannelMessage,
-  getChannelMessage,
-  getCurrentDiscordVoiceState,
-  listApplicationCommands,
-  resolveDiscordQaVoiceChannel,
-  matchesDiscordScenarioReply,
-  normalizeDiscordReactionSnapshot,
-  normalizeDiscordObservedMessage,
-  parseDiscordQaCredentialPayload,
-  renderDiscordStatusReactionHtml,
-  renderDiscordThreadReplyAttachmentHtml,
-  resolveDiscordQaRuntimeEnv,
-  waitForDiscordChannelRunning,
-  waitForDiscordMessageDeleted,
-  waitForDiscordMessageText,
-  waitForDiscordVoiceState,
-  writeDiscordStatusReactionEvidence,
-};
-
-export const discordQaScenarioSupport = {
-  testing,
-};
 /* oxlint-disable max-lines -- TODO: split this grandfathered oversized file. */

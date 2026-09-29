@@ -7,7 +7,7 @@ import { isRecord } from "openclaw/plugin-sdk/string-coerce-runtime";
 type ArtifactRoot = Awaited<ReturnType<typeof root>>;
 type ApprovalIdentity = { approvalId: string; channelId: string; messageTs: string };
 
-export type SlackDesktopRemoteMetadata = {
+type SlackDesktopRemoteMetadata = {
   gatewayAlive?: boolean;
   gatewayPid?: string;
   hydrateMode?: string;
@@ -91,7 +91,7 @@ function assertApprovalCheckpointJson(params: {
   state: MantisApprovalCheckpointState;
 }) {
   assertApprovalCheckpointBaseJson(params);
-  const expectedKind = params.scenarioId === "slack-approval-exec-native" ? "exec" : "plugin";
+  const expectedKind = params.scenarioId.endsWith("-approval-exec-native") ? "exec" : "plugin";
   if (params.record.approvalKind !== expectedKind) {
     throw new Error(`${params.label} has an unexpected approval kind.`);
   }

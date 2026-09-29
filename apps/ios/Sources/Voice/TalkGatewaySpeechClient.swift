@@ -95,7 +95,7 @@ final class TalkGatewaySpeechClient: TalkGatewaySpeechSynthesizing {
             normalize: directive?.normalize,
             language: directive?.language,
             latencytier: directive?.latencyTier)
-        let paramsJSON = try String(decoding: JSONEncoder().encode(params), as: UTF8.self)
+        let paramsJSON = try String(bytes: JSONEncoder().encode(params), encoding: .utf8)!
         let responseData = try await request(
             "talk.speak",
             paramsJSON,

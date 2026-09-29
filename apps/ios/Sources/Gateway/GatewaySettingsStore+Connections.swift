@@ -67,6 +67,8 @@ extension GatewaySettingsStore.GatewayRegistry {
         self.connectedStableIDs = try values.decodeIfPresent(
             [String].self,
             forKey: .connectedStableIDs) ?? (version == 1 ? activeStableID.map { [$0] } ?? [] : [])
-        self.entries = try values.decodeIfPresent([GatewaySettingsStore.GatewayRegistryEntry].self, forKey: .entries) ?? []
+        self.entries = try values.decodeIfPresent(
+            [GatewaySettingsStore.GatewayRegistryEntry].self,
+            forKey: .entries) ?? []
     }
 }

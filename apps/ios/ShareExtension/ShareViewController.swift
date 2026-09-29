@@ -222,9 +222,9 @@ final class ShareViewController: UIViewController {
             timeoutSeconds: nil,
             key: UUID().uuidString)
         let data = try JSONEncoder().encode(params)
-        let json = String(decoding: data, as: UTF8.self)
+        let json = String(bytes: data, encoding: .utf8)!
         let eventData = try JSONEncoder().encode(NodeEventParams(event: "agent.request", payloadjson: json))
-        let nodeEventParams = String(decoding: eventData, as: UTF8.self)
+        let nodeEventParams = String(bytes: eventData, encoding: .utf8)!
         _ = try await gateway.request(method: "node.event", paramsJSON: nodeEventParams, timeoutSeconds: 25)
     }
 

@@ -2846,7 +2846,7 @@ final class TalkModeManager: NSObject {
         let params = TalkClientCloseParams(
             sessionkey: sessionKey,
             voicesessionid: voiceSessionId)
-        let json = try String(decoding: JSONEncoder().encode(params), as: UTF8.self)
+        let json = try String(bytes: JSONEncoder().encode(params), encoding: .utf8)!
         #if DEBUG
         if let testRealtimeVoiceSessionCloseRequest {
             try await testRealtimeVoiceSessionCloseRequest("talk.client.close", json)

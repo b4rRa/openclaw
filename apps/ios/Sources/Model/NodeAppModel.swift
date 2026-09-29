@@ -3224,7 +3224,8 @@ extension NodeAppModel {
     }
 
     fileprivate static func encodePayload(_ obj: some Encodable) throws -> String {
-        try String(decoding: JSONEncoder().encode(obj), as: UTF8.self)
+        // JSONEncoder guarantees UTF-8 output.
+        try String(bytes: JSONEncoder().encode(obj), encoding: .utf8)!
     }
 
     private func isCameraEnabled() -> Bool {

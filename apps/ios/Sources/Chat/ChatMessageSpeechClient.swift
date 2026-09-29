@@ -27,7 +27,7 @@ enum ChatMessageSpeechClient {
     {
         let params = TtsSpeakParams(text: text)
         let paramsData = try JSONEncoder().encode(params)
-        let paramsJSON = String(decoding: paramsData, as: UTF8.self)
+        let paramsJSON = String(bytes: paramsData, encoding: .utf8)!
         let responseData = try await request("tts.speak", paramsJSON, Self.requestTimeoutSeconds)
         let response = try JSONDecoder().decode(TtsSpeakResult.self, from: responseData)
         guard let audioData = Data(base64Encoded: response.audiobase64), !audioData.isEmpty else {

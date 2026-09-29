@@ -442,7 +442,7 @@ final class TalkRealtimeWebRTCSession: NSObject {
             text: trimmed,
             timestamp: Date().timeIntervalSince1970 * 1000,
             persist: { [gateway, gatewayRoute] params in
-                let json = try String(decoding: JSONEncoder().encode(params), as: UTF8.self)
+                let json = try String(bytes: JSONEncoder().encode(params), encoding: .utf8)!
                 _ = try await gateway.request(
                     method: "talk.client.transcript",
                     paramsJSON: json,
@@ -653,7 +653,7 @@ final class TalkRealtimeWebRTCSession: NSObject {
             if let voiceSessionId = self.voiceSessionId {
                 params["voiceSessionId"] = voiceSessionId
             }
-            let json = try String(decoding: JSONSerialization.data(withJSONObject: params), as: UTF8.self)
+            let json = try String(bytes: JSONSerialization.data(withJSONObject: params), encoding: .utf8)!
             let stream = await gateway.subscribeServerEvents(bufferingNewest: 200)
             try Task.checkCancellation()
             try self.checkNotStopped()
@@ -729,7 +729,7 @@ final class TalkRealtimeWebRTCSession: NSObject {
         defer { self.activeToolTasks[callId] = nil }
         do {
             let params = try Self.controlParams(sessionKey: self.sessionKey, argsJSON: argsJSON)
-            let json = try String(decoding: JSONSerialization.data(withJSONObject: params), as: UTF8.self)
+            let json = try String(bytes: JSONSerialization.data(withJSONObject: params), encoding: .utf8)!
             let res = try await gateway.request(
                 method: "talk.client.steer",
                 paramsJSON: json,
@@ -1039,7 +1039,7 @@ final class TalkRealtimeWebRTCSession: NSObject {
 
     private static func encodeJSONString(_ value: [String: String]) -> String? {
         guard let data = try? JSONSerialization.data(withJSONObject: value) else { return nil }
-        return String(decoding: data, as: UTF8.self)
+        return String(bytes: data, encoding: .utf8)
     }
 
     private func sendRealtimeEvent(_ event: [String: Any]) {

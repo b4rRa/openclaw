@@ -23,6 +23,7 @@ import {
   captureGatewayToolCallerAssertion,
   getGatewayToolCallerIdentity,
 } from "../tools/gateway-caller-context.js";
+import type { FollowupRequesterAuthority } from "./completion/session-followup-completion.types.js";
 import type { SubagentRunRecord } from "./registry/subagent-registry.types.js";
 
 type RequesterCronAuthority = {
@@ -525,7 +526,7 @@ export function captureRequesterFollowupAuthority(params: {
   sourceSessionKey: string;
   isCurrent: () => boolean;
   release: () => void;
-}) {
+}): FollowupRequesterAuthority | undefined {
   const capture = captureActiveCronManagementAuthority({
     runId: params.requesterTurnRunId,
     sessionKey: params.requesterSessionKey,

@@ -421,8 +421,8 @@ function createQaCrablineTransport(params: {
     supportedActions: [],
     resetTransport: state.resetTransport,
 
-    createGatewayConfig: (params: { baseUrl: string }): QaTransportGatewayConfig => {
-      const rawConfig = adapter.createGatewayConfig(params) as OpenClawConfig;
+    createGatewayConfig: (input: { baseUrl: string }): QaTransportGatewayConfig => {
+      const rawConfig = adapter.createGatewayConfig(input) as OpenClawConfig;
       const config =
         selection.channel === "signal"
           ? normalizeCrablineSignalGatewayConfig(rawConfig)
@@ -494,9 +494,9 @@ function createQaCrablineTransport(params: {
       } as QaTransportGatewayConfig;
     },
 
-    waitReady: (params: Parameters<QaTransportAdapter["waitReady"]>[0]) =>
+    waitReady: (input: Parameters<QaTransportAdapter["waitReady"]>[0]) =>
       waitForQaTransportAccountReady({
-        ...params,
+        ...input,
         accountId: adapter.accountId,
         channel: adapter.channel,
       }),

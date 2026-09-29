@@ -570,7 +570,7 @@ function evaluateLaneArtifact(
       return evaluateTokenEfficiencySummary(payload, lane.expectedTokenUsageSource);
     case "jsonl-replay-summary":
       return evaluateJsonlReplaySummary(payload);
-    case "self-test-summary":
+    default:
       return evaluateSelfTestSummary(payload);
   }
 }

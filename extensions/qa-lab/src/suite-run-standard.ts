@@ -13,10 +13,7 @@ import {
   type QaRuntimeParityCellTiming,
 } from "./runtime-parity-timing.js";
 import { captureRuntimeParityCell } from "./runtime-parity.js";
-import {
-  type QaSuiteGatewayHeapSnapshot,
-  type QaSuiteGatewayRssSample,
-} from "./suite-artifacts.js";
+import type { QaSuiteGatewayHeapSnapshot, QaSuiteGatewayRssSample } from "./suite-artifacts.js";
 import { createQaSuiteEvidenceInvocation } from "./suite-evidence.js";
 import {
   applyQaSuiteGatewayConfigPatches,

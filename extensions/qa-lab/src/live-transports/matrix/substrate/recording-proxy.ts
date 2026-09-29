@@ -598,7 +598,7 @@ export async function startMatrixQaRecordingProxy(params: {
         substrate,
       };
     },
-    installFaultRule: proxy.installRule,
+    installFaultRule: proxy.installRule.bind(proxy),
     records: () =>
       structuredClone(
         records
@@ -608,7 +608,7 @@ export async function startMatrixQaRecordingProxy(params: {
     setScenarioId(nextScenarioId) {
       scenarioId = nextScenarioId;
     },
-    setTargetBaseUrl: proxy.setTargetBaseUrl,
-    stop: proxy.stop,
+    setTargetBaseUrl: proxy.setTargetBaseUrl.bind(proxy),
+    stop: proxy.stop.bind(proxy),
   };
 }

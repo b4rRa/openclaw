@@ -266,18 +266,18 @@ export function createQaTransportStateMethods(params: {
       .filter((message) => message.accountId === accountId);
   return {
     state,
-    async reset() {
+    reset: async () => {
       assertTransportHealthy();
       await state.reset();
     },
     async sendInbound(input: QaBusInboundMessageInput) {
       return await state.addInboundMessage(input);
     },
-    async waitForCondition<T>(
+    waitForCondition: async <T>(
       check: () => T | Promise<T | null | undefined> | null | undefined,
       timeoutMs?: number,
       intervalMs?: number,
-    ): Promise<T> {
+    ): Promise<T> => {
       const failureOptions = {
         accountId,
         sinceIndex: state.getSnapshot().messages.length,
@@ -296,7 +296,7 @@ export function createQaTransportStateMethods(params: {
         describeTimeout,
       );
     },
-    async waitForNoOutbound(input: QaTransportWaitForNoOutboundInput = {}) {
+    waitForNoOutbound: async (input: QaTransportWaitForNoOutboundInput = {}) => {
       assertTransportHealthy();
       const quietMs = resolveTimerTimeoutMs(input.quietMs, 1_200, 0);
       await sleep(quietMs);
@@ -312,7 +312,7 @@ export function createQaTransportStateMethods(params: {
         throw new Error(`expected no outbound messages for ${quietMs}ms, saw:\n${summary}`);
       }
     },
-    async waitForOutbound(input: QaTransportOutboundMatch) {
+    waitForOutbound: async (input: QaTransportOutboundMatch) => {
       return await waitForQaTransportCondition(
         () => {
           assertTransportHealthy();

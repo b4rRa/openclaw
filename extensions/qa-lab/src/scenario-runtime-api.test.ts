@@ -115,7 +115,7 @@ describe("createQaScenarioRuntimeApi", () => {
     });
     expect(inbound.id.trim()).not.toBe("");
     expect(outbound.id.trim()).not.toBe("");
-    api.readTransportMessage({ accountId: "qa-channel", messageId: outbound.id });
+    await api.readTransportMessage({ accountId: "qa-channel", messageId: outbound.id });
     await api.reset();
     await api.resetBus();
     await api.resetTransport();

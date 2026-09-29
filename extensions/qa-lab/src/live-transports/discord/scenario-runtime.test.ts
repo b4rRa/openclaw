@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as testing from "./discord-live.runtime.js";
-import { type DiscordQaScenarioImplementation } from "./discord-live.runtime.js";
+import type { DiscordQaScenarioImplementation } from "./discord-live.runtime.js";
 import type { DiscordQaScenarioEnvironment } from "./scenario-environment.js";
 import { runDiscordScenario } from "./scenario-runtime.js";
 
